@@ -1,0 +1,71 @@
+********TCP Client Server Program*********
+
+ClientTCP.py
+
+from socket import *
+serverName = &#39;127.0.0.1&#39;
+serverPort = 12000
+clientSocket = socket(AF_INET, SOCK_STREAM)
+clientSocket.connect((serverName,serverPort))
+sentence = input(&quot;\nEnter file name: &quot;)
+clientSocket.send(sentence.encode())
+filecontents = clientSocket.recv(1024).decode()
+print (&#39;\nFrom Server:\n&#39;)
+print(filecontents)
+clientSocket.close()
+
+ServerTCP.py
+
+from socket import *
+serverName=&quot;127.0.0.1&quot;
+serverPort = 12000
+serverSocket = socket(AF_INET,SOCK_STREAM)
+serverSocket.bind((serverName,serverPort))
+serverSocket.listen(1)
+while 1:
+print (&quot;The server is ready to receive&quot;)
+connectionSocket, addr = serverSocket.accept()
+sentence = connectionSocket.recv(1024).decode()
+file=open(sentence,&quot;r&quot;)
+l=file.read(1024)
+connectionSocket.send(l.encode())
+print (&#39;\nSent contents of &#39; + sentence)
+file.close()
+connectionSocket.close()
+
+********UDP Client Server Program*********
+
+ClientUDP.py
+
+from socket import *
+serverName = &quot;127.0.0.1&quot;
+serverPort = 12000
+clientSocket = socket(AF_INET, SOCK_DGRAM)
+sentence = input(&quot;\nEnter file name: &quot;)
+clientSocket.sendto(bytes(sentence,&quot;utf-8&quot;),(serverName, serverPort))
+filecontents,serverAddress = clientSocket.recvfrom(2048)
+print (&#39;\nReply from Server:\n&#39;)
+print (filecontents.decode(&quot;utf-8&quot;))
+# for i in filecontents:
+# print(str(i), end = &#39;&#39;)
+clientSocket.close()
+clientSocket.close()
+
+ServerUDP.py
+
+from socket import *
+serverPort = 12000
+serverSocket = socket(AF_INET, SOCK_DGRAM)
+serverSocket.bind((&quot;127.0.0.1&quot;, serverPort))
+print (&quot;The server is ready to receive&quot;)
+while 1:
+sentence, clientAddress = serverSocket.recvfrom(2048)
+sentence = sentence.decode(&quot;utf-8&quot;)
+file=open(sentence,&quot;r&quot;)
+con=file.read(2048)
+serverSocket.sendto(bytes(con,&quot;utf-8&quot;),clientAddress)
+print (&#39;\nSent contents of &#39;, end = &#39; &#39;)
+print (sentence)
+# for i in sentence:
+# print (str(i), end = &#39;&#39;)
+file.close()
